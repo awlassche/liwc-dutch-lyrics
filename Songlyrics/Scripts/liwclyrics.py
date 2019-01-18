@@ -1,13 +1,24 @@
 from __future__ import division
 from __future__ import print_function
+import argparse
 import os
+import re
+import string
+
 from codecs import open
 
-#------------ DUTCH DATA --------------
+import nltk
+import pandas as pd
 
-this_dir, this_file = os.path.split(__file__)
-csv = os.path.join(this_dir, "LIWC_Dutch.csv")		#load Dutch LIWC data
+# TOKENIZER
+TOKENIZER = nltk.tokenize.word_tokenize
 
+# REMOVE PUNCTUATION
+def is_punct(t):
+    return re.match(f'[{string.punctuation}]+$', t) is not None
+
+# DUTCH LIWC DATA
+csv = '/Users/alielassche/documents/github/cultural-analytics/LIWC_Dutch.csv' 
 csvfile = open(csv,"r", encoding='utf-8')
 liwcfile = csvfile.read().split("\n")
 csvfile.close()
@@ -17,10 +28,7 @@ for line in liwcfile:
 	line = line.rsplit(",")
 	liwc_nl_dict[line[0]] = line[1:]
 
-
-#----------- FUNCTIONS ----------------
-
-
+# FUNCTIONS
 def freqdict(text):
 
 	"""This function returns a frequency dictionary of the input list. All words are transformed to lower case."""
@@ -38,18 +46,13 @@ def liwc(text,output='rel',lang='nl'):
 
 	"""This function takes a list of tokens as input and returns a dictionary with the relative (output='rel') or absolute (output='abs') frequencies for every LIWC category. This function works for languages English (lang='en') and Dutch (lang='nl')."""
 
-	#if text == string: convert string to list
-	if type(text).__name__ in ('str','unicode'):
-		text = text.split(" ")
-		print("\nATTENTION: Your input was of type 'string' or 'unicode' instead of 'list'. To be able to process it, we have split this string at the spaces. This may have an effect on the output, since your text has not been properly tokenized.\n\n")
-	
-	#decide on relative or absolute frequenc
+# decide on relative or absolute frequencies
 	if output == 'abs': #absolute frequency as output
 		division = 1
 	elif output == 'rel': #relative frequency as output
 		division = len(text)
 
-	#make frequency dictionary of the text to diminish number of runs in further for loop
+# make frequency dictionary of the text to diminish number of runs in further for loop
 	freq_dict = freqdict(text) 	
 	
 	if lang == 'nl':
@@ -79,6 +82,21 @@ def liwc_nl(text,output="rel"):
 
 
 if __name__ == '__main__':
-    directory = 'Users/alielassche/documents/github/cultural-analytics/decade1'
-    for artistlyrics in directory:
-        
+	
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--path", help="The directory to operate on")
+	args = parser.parse_args()
+	Rows = []
+	
+	for doc in os.scandir(args.path):
+		try:
+			with open(doc, 'r') as doc:
+				chars = doc.read().replace('\n', ' ')
+				words = []
+				for sentence in TOKENIZER(chars, language="dutch"):
+					words.extend([w.lower() for w in sentence.split() if not is_punct(w)])
+			Rows.append(liwc(words,output='rel',lang='nl'))
+		except UnicodeDecodeError:
+			continue
+		df = pd.DataFrame(Rows)
+		df.to_csv('decade1_liwc.csv', sep='\t')
