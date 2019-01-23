@@ -87,16 +87,21 @@ if __name__ == '__main__':
 	parser.add_argument("--path", help="The directory to operate on")
 	args = parser.parse_args()
 	Rows = []
+	Names = []
 	
 	for doc in os.scandir(args.path):
 		try:
-			with open(doc, 'r') as doc:
-				chars = doc.read().replace('\n', ' ')
+			with open(doc, 'r') as f:
+				chars = f.read().replace('\n', ' ')
 				words = []
 				for sentence in TOKENIZER(chars, language="dutch"):
 					words.extend([w.lower() for w in sentence.split() if not is_punct(w)])
 			Rows.append(liwc(words,output='rel',lang='nl'))
+			Names.append(doc.name)
 		except UnicodeDecodeError:
 			continue
-		df = pd.DataFrame(Rows)
-		df.to_csv('decade1_liwc.csv', sep='\t')
+		except ZeroDivisionError:
+			continue
+	df = pd.DataFrame(Rows)
+	df.index = Names
+	df.to_csv('lyrics_liwc.csv', sep='\t')
