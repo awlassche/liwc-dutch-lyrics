@@ -104,4 +104,4 @@ if __name__ == '__main__':
 			continue
 	df = pd.DataFrame(Rows)
 	df.index = Names
-	df.to_csv('lyrics_liwc.csv', sep='\t')
+	df.to_csv('lyrics_liwc_complete.csv', sep=';')
