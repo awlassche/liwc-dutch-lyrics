@@ -1,1 +1,1 @@
-# Language Change in Dutch Popular Song Lyrics (1989 - 2018)
+# Lyrics of Dutch Pop Artists Analysed with the Dutch Version of Linguistic Inquiry and Word Count (LIWC)
