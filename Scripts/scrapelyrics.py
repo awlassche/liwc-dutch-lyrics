@@ -1,8 +1,7 @@
 import lyricsgenius as genius
-import numpy as np
 import pandas as pd
 
-api = genius.Genius("33DSA0WQaKipvHXAka4Rfyj0AVQBvbjBnQBHrxRNdsTq7nrLdzFqmCC8pVCM0ITl")
+api = genius.Genius("XXX")
 
 def creatingsonglist(artists):
     for artist_name in artists:
@@ -14,5 +13,5 @@ def creatingsonglist(artists):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv("/Users/alielassche/documents/github/cultural-analytics/decade3zonderdubbel.csv", sep=';')
+    df = pd.read_csv("../Data/Hits.csv", sep=';')
     creatingsonglist(df['decade3'])

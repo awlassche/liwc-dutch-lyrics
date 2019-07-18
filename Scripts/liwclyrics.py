@@ -18,7 +18,7 @@ def is_punct(t):
     return re.match(f'[{string.punctuation}]+$', t) is not None
 
 # DUTCH LIWC DATA
-csv = '/Users/alielassche/documents/github/cultural-analytics/LIWC_Dutch.csv' 
+csv = '../data/LIWC_Dutch.csv' 
 csvfile = open(csv,"r", encoding='utf-8')
 liwcfile = csvfile.read().split("\n")
 csvfile.close()
